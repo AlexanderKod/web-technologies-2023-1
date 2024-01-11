@@ -83,8 +83,8 @@ body {
 
 .header-title {
     color: black;
-    font-family: 'Inter', sans-serif;
-    font-size: 28px;
+    font-family: Inter;
+    font-size: 36px;
     font-weight: 700;
     margin-top: 100px;
     word-spacing: 3px;
@@ -110,9 +110,10 @@ body {
 
 .header-sub {
     color: black;
-    font-family: "SF Pro Display", sans-serif;
+    font-family: SFProText-Medium;;
     font-size: 15px;
     font-weight: 500;
+    line-height: 20px;
     word-spacing: 3px;
 }
 
@@ -136,6 +137,9 @@ body {
     font-family: 'Inter', sans-serif;
     font-weight: 700;
     font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 0.3799999952316284px;
+    text-align: left;
     color: #101828;
 }
 
