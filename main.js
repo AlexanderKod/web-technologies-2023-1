@@ -1,95 +1,131 @@
-class Pizza {
-    constructor(name, price, calories) {
+class Pizza{
+  toppings = [];
+  constructor(name, price, energy, size){
       this.name = name;
       this.price = price;
-      this.calories = calories;
-      this.toppings = [];
-      this.size = null;
-    }
-  
-    addTopping(topping) {
-      this.toppings.push(topping);
-    }
-  
-    removeTopping(topping) {
-      this.toppings = this.toppings.filter((t) => t !== topping);
-    }
-  
-    getSize() {
-      return this.size;
-    }
-  
-    setSize(size) {
+      this.energy = energy;
       this.size = size;
-      this.price += size.price;
-      this.calories += size.calories;
-    }
-  
-    calculatePrice() {
-      return this.price + this.toppings.reduce((total, t) => total + t.price, 0);
-    }
-  
-    calculateCalories() {
-      return (
-        this.calories +
-        this.toppings.reduce((total, t) => total + t.calories, 0)
-      );
-    }
   }
-  
-  class PizzaSize {
-    constructor(name, price, calories) {
+
+  addTopping(topping) {
+      let new_topping = new Topping("", 0, 0);
+      for(let prop in topping){
+          new_topping[prop] = topping[prop];
+      }
+      new_topping.size = this.size;
+      this.toppings.push(new_topping);
+  }   
+
+  removeTopping(topping) {
+      let index = -1;
+      for(let t of this.toppings){
+          if(t.name === topping.name){
+              index = this.toppings.indexOf(t);
+              break;
+          }
+      }      
+      if(index != -1){
+          this.toppings.splice(index, 1)
+      }
+
+  } 
+  getToppings() {
+      return this.toppings;
+  }   
+  getSize() {
+      return this.size;
+  }              
+  getStuffing() {
+      return this.name;      
+  }    
+  calculatePrice() {
+      let toppings_price = 0;
+      this.toppings.forEach(topping => {
+          toppings_price += topping.totalPrice();
+      });
+      return this.price + this.size.price + toppings_price;
+  }     
+  calculateCalories() {
+      let toppings_energy = 0;
+      this.toppings.forEach(topping => {
+          toppings_energy += topping.totalEnergy();
+      })
+      return this.energy + this.size.energy + toppings_energy;
+  }        
+  print(){
+      let str = "\n";
+      if(this.toppings.length != 0){
+          for(let topping of this.toppings){
+              str += topping.toString() + "\n";
+          }
+      }
+      else{
+          str = "нет " + "\n";
+      }
+      return "Добавки: " + str 
+          + "Пицца: " + this.getStuffing() + "\n"
+          + "Размер: " + this.getSize().toString() + "\n"
+          + "Итоговая цена: " + this.calculatePrice() + "\n"
+          + "Итоговая калорийность: " + this.calculateCalories();
+  }
+}
+
+class PizzaSize{
+  constructor(name, price, energy, price_coef, energy_coef){
       this.name = name;
       this.price = price;
-      this.calories = calories;
-    }
+      this.energy = energy;
+      this.price_coef = price_coef;
+      this.energy_coef = energy_coef;
   }
-  
-  class Topping {
-    constructor(name, price, calories) {
+  toString(){
+      return this.name;
+  }
+}
+
+class Topping{
+  #size;
+  constructor(name, price, energy){
       this.name = name;
       this.price = price;
-      this.calories = calories;
-    }
+      this.energy = energy;
   }
-  
 
-  
-  const margherita = new Pizza("Маргарита", 500, 300);
-  const pepperoni = new Pizza("Пепперони", 800, 400);
-  const bavarian = new Pizza("Баварская", 700, 450);
-  
-  const largeSize = new PizzaSize("Большая", 300, 300);
-  const smallSize = new PizzaSize("Маленькая", 200, 200);
-  
-  const mozzarella = new Topping("Cливочная моцарелла", 50, 20);
-  const cheeseEdgeSmall = new Topping("Cырный борт для маленькой", 150, 50);
-  const cheeseEdgeLarge = new Topping("Сырный борт для большой", 300, 50);
-  const cheddarParmesanSmall = new Topping("Чедер и пармезан для маленькой", 150, 50);
-  const cheddarParmesanLarge = new Topping("Чедер и пармезан для большой", 300, 50);
-  
+  set size(value){
+      this.#size = value;
+  }
 
-  
-  margherita.setSize(largeSize);
-  margherita.addTopping(mozzarella);
-  margherita.addTopping(cheeseEdgeLarge);
-  
-  pepperoni.setSize(smallSize);
-  pepperoni.addTopping(cheeseEdgeSmall);
-  pepperoni.addTopping(cheddarParmesanSmall);
-  
-  bavarian.setSize(largeSize);
-  bavarian.addTopping(mozzarella);
-  bavarian.addTopping(cheeseEdgeLarge);
-  bavarian.addTopping(cheddarParmesanLarge);
-  
+  totalPrice(){
+      return this.price * this.#size.price_coef;
+  }
 
-  
-  console.log(margherita.calculatePrice()); 
-  console.log(margherita.calculateCalories()); 
-  
-  console.log(pepperoni.calculatePrice()); 
-  console.log(pepperoni.calculateCalories()); 
-  
-  console.log(bavarian.calculatePrice());
-  console.log(bavarian.calculateCalories()); 
+  totalEnergy(){
+      return this.energy * this.#size.energy_coef;
+  }
+
+  toString(){
+      return this.name;
+  }
+}
+let sir_bort = new Topping("Сырный борт", 150, 50);
+let cheder_i_parmezan = new Topping("Чедер и пармезан", 150, 50);
+
+let big_size = new PizzaSize("большой", 200, 200, 2, 2);
+let big_margarina_pizza = new Pizza("Маргарита", 500, 300, big_size);
+big_margarina_pizza.addTopping(sir_bort);
+big_margarina_pizza.addTopping(cheder_i_parmezan);
+
+let little_size = new PizzaSize("маленький", 100, 100, 1, 1);
+let margarina_pizza = new Pizza("Маргарита", 500, 300, little_size);
+margarina_pizza.addTopping(sir_bort);
+margarina_pizza.addTopping(cheder_i_parmezan);
+
+console.log(margarina_pizza.print());
+console.log();
+console.log(big_margarina_pizza.print());
+
+margarina_pizza.removeTopping(cheder_i_parmezan);
+
+console.log()
+
+console.log(margarina_pizza.print());
